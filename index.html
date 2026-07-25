@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Prettier Online</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        color: #000;
+        background: #c0c0c0;
+        font-family: "Courier New", monospace;
+      }
+
+      main {
+        width: min(100%, 1000px);
+        margin: 0 auto;
+        border: 3px outset #fff;
+        background: #c0c0c0;
+      }
+
+      header {
+        padding: 8px 12px;
+        color: #fff;
+        background: #000080;
+        font-weight: bold;
+      }
+
+      .content {
+        padding: 16px;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 500px;
+        padding: 10px;
+        resize: vertical;
+        border: 2px inset #fff;
+        outline: none;
+        color: #000;
+        background: #fff;
+        font: 14px/1.5 "Courier New", monospace;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      button,
+      select {
+        padding: 7px 12px;
+        border: 2px outset #fff;
+        color: #000;
+        background: #c0c0c0;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      button:active {
+        border-style: inset;
+      }
+
+      #status {
+        min-height: 20px;
+        margin-top: 12px;
+        font-size: 13px;
+      }
+
+      .error {
+        color: #800000;
+      }
+
+      .success {
+        color: #006400;
+      }
+
+      footer {
+        padding: 8px 12px;
+        border-top: 2px groove #fff;
+        font-size: 12px;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <header>Prettier Online Formatter</header>
+
+      <div class="content">
+        <textarea
+          id="editor"
+          spellcheck="false"
+          placeholder="Paste your code here..."
+        ></textarea>
+
+        <div class="toolbar">
+          <select id="parser">
+            <option value="typescript">TypeScript</option>
+            <option value="babel">JavaScript</option>
+            <option value="json">JSON</option>
+            <option value="css">CSS</option>
+            <option value="html">HTML</option>
+            <option value="markdown">Markdown</option>
+            <option value="yaml">YAML</option>
+          </select>
+
+          <button id="format" type="button">Format</button>
+          <button id="copy" type="button">Copy</button>
+          <button id="clear" type="button">Clear</button>
+        </div>
+
+        <div id="status"></div>
+      </div>
+
+      <footer>Prettier + @tenedev/prettier-config</footer>
+    </main>
+
+    <script type="module">
+      import * as prettier from "https://esm.sh/prettier@latest/standalone";
+      import babel from "https://esm.sh/prettier@latest/plugins/babel";
+      import estree from "https://esm.sh/prettier@latest/plugins/estree";
+      import typescript from "https://esm.sh/prettier@latest/plugins/typescript";
+      import html from "https://esm.sh/prettier@latest/plugins/html";
+      import postcss from "https://esm.sh/prettier@latest/plugins/postcss";
+      import markdown from "https://esm.sh/prettier@latest/plugins/markdown";
+      import yaml from "https://esm.sh/prettier@latest/plugins/yaml";
+
+      const editor = document.querySelector("#editor");
+      const parser = document.querySelector("#parser");
+      const formatButton = document.querySelector("#format");
+      const copyButton = document.querySelector("#copy");
+      const clearButton = document.querySelector("#clear");
+      const status = document.querySelector("#status");
+
+      const plugins = [
+        babel,
+        estree,
+        typescript,
+        html,
+        postcss,
+        markdown,
+        yaml,
+      ];
+
+      let sharedConfig = {};
+
+      function setStatus(message, type = "") {
+        status.textContent = message;
+        status.className = type;
+      }
+
+      async function loadConfig() {
+        try {
+          const module = await import(
+            "https://esm.sh/@tenedev/prettier-config@latest"
+          );
+
+          sharedConfig = module.default ?? module;
+
+          if (
+            !sharedConfig ||
+            typeof sharedConfig !== "object" ||
+            Array.isArray(sharedConfig)
+          ) {
+            throw new Error("Package did not export a valid Prettier config.");
+          }
+
+          setStatus("@tenedev/prettier-config loaded.", "success");
+        } catch (error) {
+          console.error(error);
+
+          sharedConfig = {};
+
+          setStatus(
+            `Could not load @tenedev/prettier-config: ${error.message}`,
+            "error",
+          );
+        }
+      }
+
+      async function formatCode() {
+        const source = editor.value;
+
+        if (!source.trim()) {
+          setStatus("Nothing to format.", "error");
+          return;
+        }
+
+        formatButton.disabled = true;
+        setStatus("Formatting...");
+
+        try {
+          const formatted = await prettier.format(source, {
+            ...sharedConfig,
+            parser: parser.value,
+            plugins,
+          });
+
+          editor.value = formatted;
+
+          setStatus("Formatting complete.", "success");
+        } catch (error) {
+          console.error(error);
+
+          const message =
+            error instanceof Error ? error.message : "Unknown formatting error.";
+
+          setStatus(`Formatting failed: ${message}`, "error");
+        } finally {
+          formatButton.disabled = false;
+        }
+      }
+
+      async function copyCode() {
+        if (!editor.value) {
+          setStatus("Nothing to copy.", "error");
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(editor.value);
+
+          setStatus("Copied to clipboard.", "success");
+        } catch (error) {
+          console.error(error);
+
+          setStatus("Could not copy to clipboard.", "error");
+        }
+      }
+
+      function clearCode() {
+        editor.value = "";
+        setStatus("");
+        editor.focus();
+      }
+
+      formatButton.addEventListener("click", formatCode);
+      copyButton.addEventListener("click", copyCode);
+      clearButton.addEventListener("click", clearCode);
+
+      editor.addEventListener("keydown", (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+          event.preventDefault();
+          formatCode();
+        }
+      });
+
+      await loadConfig();
+    </script>
+  </body>
+</html>
