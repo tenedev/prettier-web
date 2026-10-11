@@ -1,261 +1,266 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Prettier Online</title>
-
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        padding: 24px;
-        color: #000;
-        background: #c0c0c0;
-        font-family: "Courier New", monospace;
-      }
-
-      main {
-        width: min(100%, 1000px);
-        margin: 0 auto;
-        border: 3px outset #fff;
-        background: #c0c0c0;
-      }
-
-      header {
-        padding: 8px 12px;
-        color: #fff;
-        background: #000080;
-        font-weight: bold;
-      }
-
-      .content {
-        padding: 16px;
-      }
-
-      textarea {
-        width: 100%;
-        min-height: 500px;
-        padding: 10px;
-        resize: vertical;
-        border: 2px inset #fff;
-        outline: none;
-        color: #000;
-        background: #fff;
-        font: 14px/1.5 "Courier New", monospace;
-      }
-
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        margin-top: 12px;
-      }
-
-      button,
-      select {
-        padding: 7px 12px;
-        border: 2px outset #fff;
-        color: #000;
-        background: #c0c0c0;
-        font: inherit;
-        cursor: pointer;
-      }
-
-      button:active {
-        border-style: inset;
-      }
-
-      #status {
-        min-height: 20px;
-        margin-top: 12px;
-        font-size: 13px;
-      }
-
-      .error {
-        color: #800000;
-      }
-
-      .success {
-        color: #006400;
-      }
-
-      footer {
-        padding: 8px 12px;
-        border-top: 2px groove #fff;
-        font-size: 12px;
-        text-align: center;
-      }
-    </style>
-  </head>
-
-  <body>
-    <main>
-      <header>Prettier Online Formatter</header>
-
-      <div class="content">
-        <textarea
-          id="editor"
-          spellcheck="false"
-          placeholder="Paste your code here..."
-        ></textarea>
-
-        <div class="toolbar">
-          <select id="parser">
-            <option value="typescript">TypeScript</option>
-            <option value="babel">JavaScript</option>
-            <option value="json">JSON</option>
-            <option value="css">CSS</option>
-            <option value="html">HTML</option>
-            <option value="markdown">Markdown</option>
-            <option value="yaml">YAML</option>
-          </select>
-
-          <button id="format" type="button">Format</button>
-          <button id="copy" type="button">Copy</button>
-          <button id="clear" type="button">Clear</button>
-        </div>
-
-        <div id="status"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Prettier Playground</title>
+  <style>
+    :root{color-scheme:dark;--bg:#080b14;--panel:#101625;--surface:#151d2e;--border:#263149;--text:#e8edf7;--muted:#94a3b8;--accent:#8b7cff;--green:#51d6a5;--red:#ff7b8a;--yellow:#f7c96b}
+    *{box-sizing:border-box}body{margin:0;padding:24px;min-height:100vh;color:var(--text);background:radial-gradient(ellipse at 10% 0%,#28205a 0,transparent 34rem),var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,select,input,textarea{font:inherit}button,select{min-height:38px;padding:8px 12px;border:1px solid var(--border);border-radius:9px;color:var(--text);background:var(--surface);cursor:pointer}button:hover{border-color:var(--accent)}button:disabled{opacity:.5;cursor:not-allowed}button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.primary{border:0;color:white;background:linear-gradient(135deg,#8b7cff,#6251e8);font-weight:700}
+    .app{max-width:1400px;margin:auto}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px}.brand{display:flex;align-items:center;gap:12px}.logo{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#a99cff,#6251e8);color:white;font-size:22px;font-weight:900}h1{margin:0;font-size:20px}.subtitle{margin-top:4px;color:var(--muted);font-size:12px}.hero{margin-bottom:22px}.eyebrow{color:#b8adff;font-size:11px;letter-spacing:.15em;font-weight:800;text-transform:uppercase}.hero h2{margin:10px 0;font-size:clamp(28px,4vw,44px);letter-spacing:-.05em;line-height:1.1}.hero p{color:var(--muted);max-width:680px;line-height:1.6}
+    .workspace{overflow:hidden;border:1px solid var(--border);border-radius:16px;background:var(--panel);box-shadow:0 20px 70px #0003}.toolbar,.toolbar-group{display:flex;align-items:center;flex-wrap:wrap;gap:8px}.toolbar{justify-content:space-between;padding:12px;border-bottom:1px solid var(--border)}.toolbar select{max-width:100%}.filebar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid var(--border);background:#0e1421;font-size:12px}.tag{display:inline-block;padding:4px 8px;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px}
+    .editor-shell{display:grid;grid-template-columns:54px minmax(0,1fr);min-height:430px;background:#0b1020}.gutter{overflow:hidden;padding:16px 12px 24px 0;border-right:1px solid #1b263a;color:#52617b;text-align:right;user-select:none;font:13px/1.65 Consolas,monospace}#lineNumbers{margin:0;white-space:pre}
+    #editor{display:block;width:100%;min-width:0;min-height:430px;padding:16px;resize:vertical;border:0;outline:none;color:#dce6fa;background:transparent;caret-color:#b9adff;tab-size:2;white-space:pre;overflow:auto;font:13px/1.65 Consolas,"Liberation Mono",monospace}#editor::placeholder{color:#56627a}
+    .statusbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:10px 14px;border-top:1px solid var(--border);color:var(--muted);font-size:11px}.stats{display:flex;flex-wrap:wrap;gap:13px}.success{color:var(--green)}.error{color:var(--red)}.warning{color:var(--yellow)}
+    .settings{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;padding:15px;border-top:1px solid var(--border)}.setting{display:flex;flex-direction:column;gap:7px;min-width:0}.setting label{color:var(--muted);font-size:11px}.setting select{width:100%;min-width:0}
+    .advanced{padding:16px;border-top:1px solid var(--border);background:#0d1422}.advanced h3{margin:0 0 6px;font-size:14px}.advanced p{color:var(--muted);font-size:12px;line-height:1.6}.advanced-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.advanced-field{display:flex;flex-direction:column;gap:8px}.advanced-field label{color:var(--muted);font-size:12px}.advanced-field textarea{width:100%;min-height:150px;padding:12px;border:1px solid var(--border);border-radius:9px;color:var(--text);background:#080d18;resize:vertical;font:12px/1.6 Consolas,monospace}
+    .error-panel{margin:12px;overflow:hidden;border:1px solid #713544;border-radius:12px;background:#21121b}.error-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-bottom:1px solid #492633;color:#ffb5c0;font-size:12px;font-weight:700}.error-list{margin:0;padding:0;list-style:none}.error-item{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;padding:12px;border-bottom:1px solid #38212b}.error-item:last-child{border-bottom:0}.error-number{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;color:#ffb5c0;background:#492633;font-size:11px;font-weight:800}.error-title{margin:0 0 5px;color:#ffd8de;font-size:12px;font-weight:700}.error-detail{margin:0;color:#d4a9b3;font:11px/1.6 Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.error-location{margin-top:6px;color:#ff9dab;font-size:11px}.error-location button{min-height:27px;padding:3px 7px;font-size:10px}.hidden{display:none!important}footer{display:flex;justify-content:space-between;gap:12px;padding:20px 2px;color:#65728b;font-size:11px}
+    @media(max-width:760px){body{padding:14px 10px}.topbar{align-items:flex-start}.toolbar{align-items:stretch}.toolbar-group{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar-group select{grid-column:1/-1;width:100%}.toolbar button{width:100%}.editor-shell{grid-template-columns:40px minmax(0,1fr);min-height:360px}#editor{min-height:360px;padding:12px;font-size:12px}.gutter{padding-right:8px;font-size:12px}.settings{grid-template-columns:repeat(2,minmax(0,1fr))}.advanced-grid{grid-template-columns:1fr}footer{flex-direction:column}}
+  </style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">P</div><div><h1>Prettier Playground</h1><div class="subtitle">Clean code. Clear mind.</div></div></div>
+    <span class="tag" id="runtimeState">Loading formatter…</span>
+  </header>
+  <section class="hero"><div class="eyebrow">Developer tools · In your browser</div><h2>Make messy code<br><span style="color:#a99cff">look beautiful.</span></h2><p>Format code, inspect multiple diagnostics, customize Prettier, and find errors by line and column.</p></section>
+  <section class="workspace">
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <select id="parser" aria-label="Language"><option value="auto">✨ Auto-detect</option><option value="typescript">TypeScript</option><option value="babel">JavaScript / JSX</option><option value="json">JSON</option><option value="html">HTML</option><option value="css">CSS</option><option value="scss">SCSS</option><option value="markdown">Markdown</option><option value="yaml">YAML</option></select>
+        <button id="formatButton" class="primary">✦ Format code</button><button id="checkButton">✓ Check errors</button><button id="copyButton">▢ Copy</button>
       </div>
+      <div class="toolbar-group"><button id="undoButton">↶ Undo</button><button id="redoButton">↷ Redo</button><button id="downloadButton">↓ Export</button><button id="clearButton">Clear</button></div>
+    </div>
+    <div class="toolbar">
+      <button id="configToggle">⚙ Custom config & plugins</button>
+      <label style="font-size:12px;color:var(--muted)"><input id="formatOnPaste" type="checkbox"> Format on paste</label>
+      <label style="font-size:12px;color:var(--muted)"><input id="checkOnEdit" type="checkbox" checked> Check on edit</label>
+      <button id="uploadButton">↑ Open file</button><input id="fileInput" class="hidden" type="file">
+    </div>
+    <section id="advanced" class="advanced hidden">
+      <h3>Custom Prettier configuration & plugins</h3><p>Config precedence: shared config → custom JSON → editor controls. Only load plugin URLs you trust.</p>
+      <div class="advanced-grid">
+        <div class="advanced-field"><label for="customConfig">Custom configuration (JSON)</label><textarea id="customConfig" spellcheck="false" placeholder='{\n  "semi": false,\n  "singleQuote": true,\n  "printWidth": 90,\n  "trailingComma": "all"\n}'></textarea></div>
+        <div class="advanced-field"><label for="pluginUrls">Additional plugin URLs (one per line)</label><textarea id="pluginUrls" spellcheck="false" placeholder="https://esm.sh/prettier-plugin-package-name"></textarea></div>
+      </div>
+      <button id="applyConfig" class="primary" style="margin-top:12px">Apply config & plugins</button><button id="resetConfig" style="margin-top:12px">Reset custom settings</button>
+      <p>Browser standalone needs browser-compatible plugins. A Node-specific config may not import directly in a browser.</p>
+    </section>
+    <div class="filebar"><div><strong id="fileName">untitled.ts</strong> <span class="tag" id="detectedLabel">Auto-detect</span></div><span class="tag" id="indentBadge">2 spaces</span></div>
+    <div class="editor-shell"><div class="gutter" id="gutter" aria-hidden="true"><pre id="lineNumbers">1</pre></div><textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="Code editor" placeholder="// Paste your code here…"></textarea></div>
+    <div class="statusbar"><span id="statusMessage">Loading formatter…</span><div class="stats"><span id="lineCount">1 line</span><span id="charCount">0 chars</span><span id="wordCount">0 words</span><span id="cursorPosition">Ln 1, Col 1</span><span id="currentLineCount">Line chars: 0</span><span id="maxColumnCount">Max col: 0</span></div></div>
+    <section id="errorPanel" class="error-panel hidden" aria-live="polite"><div class="error-heading"><span id="errorHeading">Diagnostics</span><button id="dismissErrors">Dismiss</button></div><ol id="errorList" class="error-list"></ol></section>
+    <div class="settings">
+      <div class="setting"><label for="tabWidth">Indentation</label><select id="tabWidth"><option value="2">2 spaces</option><option value="4">4 spaces</option><option value="8">8 spaces</option><option value="tab">Tabs</option></select></div>
+      <div class="setting"><label for="printWidth">Print width</label><select id="printWidth"><option value="80">80 columns</option><option value="100" selected>100 columns</option><option value="120">120 columns</option><option value="140">140 columns</option></select></div>
+      <div class="setting"><label for="semi">Semicolons</label><select id="semi"><option value="true">Use semicolons</option><option value="false">No semicolons</option></select></div>
+      <div class="setting"><label for="quotes">Quotes</label><select id="quotes"><option value="single">Single quotes</option><option value="double">Double quotes</option></select></div>
+      <div class="setting"><label for="trailingComma">Trailing commas</label><select id="trailingComma"><option value="all">All</option><option value="es5">ES5</option><option value="none">None</option></select></div>
+    </div>
+  </section>
+  <footer><span>Prettier Playground · Prettier + @tenedev/prettier-config</span><span>Code is processed in your browser, with remote modules loaded as needed.</span></footer>
+</main>
 
-      <footer>Prettier + @tenedev/prettier-config</footer>
-    </main>
+<script type="module">
+const $ = selector => document.querySelector(selector);
+const editor = $("#editor"), parserSelect = $("#parser"), lineNumbers = $("#lineNumbers"), gutter = $("#gutter");
+let prettier, plugins = [], customPlugins = [], sharedConfig = {}, customConfig = {};
+let fileName = "untitled", history = [""], historyIndex = 0, historyTimer, checkTimer;
+const parserInfo = {
+  typescript:{label:"TypeScript",ext:"ts"}, babel:{label:"JavaScript",ext:"js"},
+  json:{label:"JSON",ext:"json"}, html:{label:"HTML",ext:"html"},
+  css:{label:"CSS",ext:"css"}, scss:{label:"SCSS",ext:"scss"},
+  markdown:{label:"Markdown",ext:"md"}, yaml:{label:"YAML",ext:"yaml"}
+};
 
-    <script type="module">
-      import * as prettier from "https://esm.sh/prettier@latest/standalone";
-      import babel from "https://esm.sh/prettier@latest/plugins/babel";
-      import estree from "https://esm.sh/prettier@latest/plugins/estree";
-      import typescript from "https://esm.sh/prettier@latest/plugins/typescript";
-      import html from "https://esm.sh/prettier@latest/plugins/html";
-      import postcss from "https://esm.sh/prettier@latest/plugins/postcss";
-      import markdown from "https://esm.sh/prettier@latest/plugins/markdown";
-      import yaml from "https://esm.sh/prettier@latest/plugins/yaml";
+function setStatus(message,type=""){const el=$("#statusMessage");el.textContent=message;el.className=type;}
+function detectParser(source,name=""){
+  const ext=name.toLowerCase().split(".").pop();
+  const map={ts:"typescript",tsx:"typescript",mts:"typescript",cts:"typescript",js:"babel",jsx:"babel",mjs:"babel",cjs:"babel",json:"json",html:"html",htm:"html",vue:"html",css:"css",scss:"scss",md:"markdown",mdx:"markdown",yaml:"yaml",yml:"yaml"};
+  if(parserInfo[map[ext]])return map[ext];
+  const text=source.trim(); if(!text)return "typescript";
+  if(/^<!doctype\s+html|^<html[\s>]/i.test(text))return "html";
+  if(/^(\{[\s\S]*\}|\[[\s\S]*\])$/.test(text)){try{JSON.parse(text);return "json";}catch{}}
+  if(/^(\s*#\s|```|>\s|[-*]\s+\S)/m.test(text))return "markdown";
+  if(/^(name|version|scripts|dependencies|services|jobs|steps):/m.test(text))return "yaml";
+  if(/\b(interface|type)\s+\w+\s*(=|\{)|:\s*(string|number|boolean|unknown|any)\b/.test(text))return "typescript";
+  if(/<[A-Z][\w.]*[\s/>]/.test(text))return "babel";
+  if(/^\s*(\$[\w-]+\s*:|@mixin\b)/m.test(text))return "scss";
+  if(/^(\s*\/\*[\s\S]*?\*\/\s*)?([.#][\w-]+|@media|:root|body|html)\s*\{/m.test(text)&&!/\b(const|let|function|import|export)\b/.test(text))return "css";
+  if(/\b(const|let|var|function|return|import|export|console)\b|=>/.test(text))return "babel";
+  return "json";
+}
+function getParser(){return parserSelect.value==="auto"?detectParser(editor.value,fileName):parserSelect.value;}
+function updateStats(){
+  const value=editor.value,lines=value.split("\n"),before=value.slice(0,editor.selectionStart),cursorLine=before.split("\n").length;
+  const cursorColumn=before.length-before.lastIndexOf("\n"),currentLine=lines[cursorLine-1]??"",maxColumn=Math.max(...lines.map(line=>line.length),0);
+  const parser=getParser(),info=parserInfo[parser]||parserInfo.typescript;
+  $("#lineCount").textContent=`${lines.length} ${lines.length===1?"line":"lines"}`;
+  $("#charCount").textContent=`${value.length} chars`;
+  $("#wordCount").textContent=`${value.trim()?value.trim().split(/\s+/).length:0} words`;
+  $("#cursorPosition").textContent=`Ln ${cursorLine}, Col ${cursorColumn}`;
+  $("#currentLineCount").textContent=`Line chars: ${currentLine.length}`;
+  $("#maxColumnCount").textContent=`Max col: ${maxColumn}`;
+  $("#fileName").textContent=fileName==="untitled"?`untitled.${info.ext}`:fileName;
+  $("#detectedLabel").textContent=parserSelect.value==="auto"?`Detected · ${info.label}`:info.label;
+  $("#indentBadge").textContent=$("#tabWidth").value==="tab"?"Tabs":`${$("#tabWidth").value} spaces`;
+  lineNumbers.textContent=lines.map((_,i)=>i+1).join("\n");
+}
+function saveHistory(force=false){
+  clearTimeout(historyTimer);
+  const save=()=>{if(history[historyIndex]===editor.value)return;history=history.slice(0,historyIndex+1);history.push(editor.value);if(history.length>100)history.shift();historyIndex=history.length-1;updateHistoryButtons();};
+  if(force)save();else historyTimer=setTimeout(save,300);
+}
+function updateHistoryButtons(){$("#undoButton").disabled=historyIndex<=0;$("#redoButton").disabled=historyIndex>=history.length-1;}
+function restoreHistory(index){if(index<0||index>=history.length)return;historyIndex=index;editor.value=history[index];updateStats();updateHistoryButtons();setStatus("Editor history restored.");}
+function clearErrors(){$("#errorPanel").classList.add("hidden");$("#errorList").replaceChildren();}
+function lineColumn(source,offset){const safe=Math.max(0,Math.min(offset??0,source.length)),before=source.slice(0,safe);return{line:before.split("\n").length,column:safe-before.lastIndexOf("\n"),offset:safe};}
+function addDiagnostic(list,source,message,offset,length=1,category="Error"){const pos=lineColumn(source,offset);list.push({message,line:pos.line,column:pos.column,offset:pos.offset,length:Math.max(1,length||1),category});}
+let tsPromise;
+function loadTypeScript(){if(!tsPromise)tsPromise=import("https://esm.sh/typescript@5.9.3").then(m=>m.default??m);return tsPromise;}
 
-      const editor = document.querySelector("#editor");
-      const parser = document.querySelector("#parser");
-      const formatButton = document.querySelector("#format");
-      const copyButton = document.querySelector("#copy");
-      const clearButton = document.querySelector("#clear");
-      const status = document.querySelector("#status");
-
-      const plugins = [
-        babel,
-        estree,
-        typescript,
-        html,
-        postcss,
-        markdown,
-        yaml,
-      ];
-
-      let sharedConfig = {};
-
-      function setStatus(message, type = "") {
-        status.textContent = message;
-        status.className = type;
+/* Lightweight extra checks are helpful for demos, but are not a full semantic type checker. */
+function checkCommonTypeMistakes(ts,sf,source){
+  const out=[],interfaces=new Map(),annotated=[];
+  const typeOf=n=>n?.type?n.type.getText(sf).replace(/\s/g,""):"";
+  function visit(node){
+    if(ts.isInterfaceDeclaration(node)){const props=new Map();for(const m of node.members){if(m.name&&ts.isPropertySignature(m))props.set(m.name.getText(sf),typeOf(m));}interfaces.set(node.name.text,props);}
+    if(ts.isVariableDeclaration(node)&&ts.isIdentifier(node.name)&&node.type&&node.initializer)annotated.push({node,type:typeOf(node)});
+    ts.forEachChild(node,visit);
+  }
+  visit(sf);
+  function primitive(expr){if(!expr)return"";if(ts.isStringLiteral(expr)||ts.isNoSubstitutionTemplateLiteral(expr))return"string";if(ts.isNumericLiteral(expr))return"number";if(expr.kind===ts.SyntaxKind.TrueKeyword||expr.kind===ts.SyntaxKind.FalseKeyword)return"boolean";return"";}
+  for(const d of annotated){const actual=primitive(d.node.initializer),expected=d.type;if(actual&&["string","number","boolean"].includes(expected)&&actual!==expected)addDiagnostic(out,source,`Type mismatch: expected '${expected}', but received '${actual}'.`,d.node.initializer.getStart(sf),d.node.initializer.getWidth(sf));}
+  function objects(node){
+    if(ts.isObjectLiteralExpression(node)){
+      for(const prop of node.properties){if(!ts.isPropertyAssignment(prop)||!ts.isIdentifier(prop.name))continue;const actual=primitive(prop.initializer);if(!actual)continue;
+        for(const props of interfaces.values()){const expected=(props.get(prop.name.text)||"").replace(/\?/g,"");if(expected&&["string","number","boolean"].includes(expected)&&expected!==actual)addDiagnostic(out,source,`Property '${prop.name.text}' expects '${expected}', but received '${actual}'.`,prop.initializer.getStart(sf),prop.initializer.getWidth(sf));}
       }
-
-      async function loadConfig() {
-        try {
-          const module = await import(
-            "https://esm.sh/@tenedev/prettier-config@latest"
-          );
-
-          sharedConfig = module.default ?? module;
-
-          if (
-            !sharedConfig ||
-            typeof sharedConfig !== "object" ||
-            Array.isArray(sharedConfig)
-          ) {
-            throw new Error("Package did not export a valid Prettier config.");
-          }
-
-          setStatus("@tenedev/prettier-config loaded.", "success");
-        } catch (error) {
-          console.error(error);
-
-          sharedConfig = {};
-
-          setStatus(
-            `Could not load @tenedev/prettier-config: ${error.message}`,
-            "error",
-          );
-        }
-      }
-
-      async function formatCode() {
-        const source = editor.value;
-
-        if (!source.trim()) {
-          setStatus("Nothing to format.", "error");
-          return;
-        }
-
-        formatButton.disabled = true;
-        setStatus("Formatting...");
-
-        try {
-          const formatted = await prettier.format(source, {
-            ...sharedConfig,
-            parser: parser.value,
-            plugins,
-          });
-
-          editor.value = formatted;
-
-          setStatus("Formatting complete.", "success");
-        } catch (error) {
-          console.error(error);
-
-          const message =
-            error instanceof Error ? error.message : "Unknown formatting error.";
-
-          setStatus(`Formatting failed: ${message}`, "error");
-        } finally {
-          formatButton.disabled = false;
-        }
-      }
-
-      async function copyCode() {
-        if (!editor.value) {
-          setStatus("Nothing to copy.", "error");
-          return;
-        }
-
-        try {
-          await navigator.clipboard.writeText(editor.value);
-
-          setStatus("Copied to clipboard.", "success");
-        } catch (error) {
-          console.error(error);
-
-          setStatus("Could not copy to clipboard.", "error");
-        }
-      }
-
-      function clearCode() {
-        editor.value = "";
-        setStatus("");
-        editor.focus();
-      }
-
-      formatButton.addEventListener("click", formatCode);
-      copyButton.addEventListener("click", copyCode);
-      clearButton.addEventListener("click", clearCode);
-
-      editor.addEventListener("keydown", (event) => {
-        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
-          event.preventDefault();
-          formatCode();
-        }
-      });
-
-      await loadConfig();
-    </script>
-  </body>
+    }
+    ts.forEachChild(node,objects);
+  }
+  objects(sf);
+  let offset=0;
+  for(const line of source.split("\n")){const trimmed=line.trim();if(/^(console\.(log|error|warn|info|debug)|alert)\s*\(/.test(trimmed)){const opens=(trimmed.match(/\(/g)||[]).length,closes=(trimmed.match(/\)/g)||[]).length;if(opens>closes)addDiagnostic(out,source,"Possible missing closing parenthesis ')'.",offset+line.length);}
+    offset+=line.length+1;}
+  const unique=new Map();for(const d of out)unique.set(`${d.line}:${d.column}:${d.message}`,d);
+  return [...unique.values()].sort((a,b)=>a.offset-b.offset);
+}
+async function collectDiagnostics(source,parser){
+  const diagnostics=[];
+  if(parser==="typescript"){
+    const ts=await loadTypeScript(),sf=ts.createSourceFile(fileName.endsWith(".tsx")?fileName:"playground.ts",source,ts.ScriptTarget.Latest,true,fileName.endsWith(".tsx")?ts.ScriptKind.TSX:ts.ScriptKind.TS);
+    for(const d of sf.parseDiagnostics)addDiagnostic(diagnostics,source,ts.flattenDiagnosticMessageText(d.messageText,"\n"),d.start??0,d.length);
+    if(!diagnostics.length)diagnostics.push(...checkCommonTypeMistakes(ts,sf,source));
+  }else if(parser==="json"){
+    try{JSON.parse(source);}catch(e){const m=String(e.message).match(/position\s+(\d+)/i);addDiagnostic(diagnostics,source,e.message,m?Number(m[1]):0);}
+  }else if(parser==="babel"){
+    try{const bp=await import("https://esm.sh/@babel/parser@7.28.4");bp.parse(source,{sourceType:"unambiguous",errorRecovery:true,plugins:["jsx","typescript","decorators-legacy"]});}
+    catch(e){const line=e.loc?.line,col=e.loc?.column;let offset=0;if(line)offset=source.split("\n").slice(0,line-1).reduce((n,s)=>n+s.length+1,0)+(col||0);addDiagnostic(diagnostics,source,e.message,offset);}
+  }
+  return diagnostics;
+}
+function showDiagnostics(diagnostics){
+  const list=$("#errorList");list.replaceChildren();
+  if(!diagnostics.length){clearErrors();setStatus("No diagnostics found.","success");return;}
+  $("#errorHeading").textContent=`${diagnostics.length} diagnostic${diagnostics.length===1?"":"s"}`;
+  for(const [i,d] of diagnostics.entries()){
+    const item=document.createElement("li");item.className="error-item";
+    const num=document.createElement("span");num.className="error-number";num.textContent=String(i+1);
+    const content=document.createElement("div"),title=document.createElement("p"),detail=document.createElement("p"),loc=document.createElement("div"),jump=document.createElement("button");
+    title.className="error-title";title.textContent=d.category||"Error";detail.className="error-detail";detail.textContent=d.message;
+    loc.className="error-location";jump.type="button";jump.textContent=`Line ${d.line}, column ${d.column}`;
+    jump.addEventListener("click",()=>{editor.focus();editor.setSelectionRange(d.offset,Math.min(editor.value.length,d.offset+d.length));const lh=parseFloat(getComputedStyle(editor).lineHeight)||21;editor.scrollTop=Math.max(0,(d.line-3)*lh);gutter.scrollTop=editor.scrollTop;updateStats();});
+    loc.append(jump);content.append(title,detail,loc);item.append(num,content);list.append(item);
+  }
+  $("#errorPanel").classList.remove("hidden");setStatus(`${diagnostics.length} diagnostic(s) found.`,"error");
+}
+async function checkErrors(){
+  const source=editor.value;if(!source.trim()){clearErrors();setStatus("Nothing to check.");return;}
+  setStatus("Checking code…","warning");
+  try{showDiagnostics(await collectDiagnostics(source,getParser()));}
+  catch(e){showDiagnostics([{message:e instanceof Error?e.message:String(e),line:1,column:1,offset:0,length:1,category:"Diagnostics engine error"}]);}
+}
+async function loadFormatter(){
+  try{
+    // Fixed major version: CDN resolves the latest compatible Prettier 3.x release.
+    // Use @3 rather than @latest to avoid silently upgrading to a new major.
+    const PRETTIER_MAJOR=3,base=`https://esm.sh/prettier@${PRETTIER_MAJOR}`;
+    const modules=await Promise.all([
+      import(`${base}/standalone`),import(`${base}/plugins/babel`),import(`${base}/plugins/estree`),
+      import(`${base}/plugins/typescript`),import(`${base}/plugins/html`),import(`${base}/plugins/postcss`),
+      import(`${base}/plugins/markdown`),import(`${base}/plugins/yaml`)
+    ]);
+    prettier=modules[0].default??modules[0];plugins=modules.slice(1).map(m=>m.default??m);
+    const actualVersion=modules[0].version??modules[0].default?.version??"version unavailable";
+    $("#runtimeState").textContent=`Prettier v${actualVersion}`;
+    $("#runtimeState").title=`Loaded Prettier version: ${actualVersion}`;
+  }catch(e){console.error(e);$("#runtimeState").textContent="Formatter unavailable";setStatus("Could not load Prettier. Check your internet connection.","error");$("#formatButton").disabled=true;return;}
+  try{
+    // Set this major to the major version published by your config package.
+    const CONFIG_MAJOR=1,configUrl=`https://esm.sh/@tenedev/prettier-config@${CONFIG_MAJOR}?bundle`;
+    const m=await import(configUrl),config=m.default??m;
+    if(!config||typeof config!=="object"||Array.isArray(config))throw new Error("Expected a config object export.");
+    sharedConfig=config;
+    const configVersion=m.version??m.default?.version??"version unavailable";
+    $("#runtimeState").title+=` | @tenedev/prettier-config v${configVersion}`;
+    setStatus(`Prettier ready; shared config v${configVersion} loaded.`,"success");
+  }catch(e){console.warn("Shared config unavailable:",e);setStatus("Prettier ready; shared config unavailable, using browser defaults.","warning");}
+}
+function buildOptions(parser){
+  const tab=$("#tabWidth").value;
+  return{...sharedConfig,...customConfig,parser,plugins:[...plugins,...customPlugins],tabWidth:tab==="tab"?2:Number(tab),useTabs:tab==="tab",printWidth:Number($("#printWidth").value),semi:$("#semi").value==="true",singleQuote:$("#quotes").value==="single",trailingComma:$("#trailingComma").value};
+}
+async function formatCode(){
+  if(!prettier)return setStatus("Formatter is not available.","error");
+  if(!editor.value.trim())return setStatus("Nothing to format.","warning");
+  $("#formatButton").disabled=true;setStatus("Formatting…","warning");
+  try{const result=await prettier.format(editor.value,buildOptions(getParser()));if(result!==editor.value){editor.value=result;saveHistory(true);}updateStats();clearErrors();setStatus("Formatting complete.","success");}
+  catch(e){console.error(e);const pos=lineColumn(editor.value,e.loc?.index??0);showDiagnostics([{message:e instanceof Error?e.message:String(e),line:pos.line,column:pos.column,offset:pos.offset,length:1,category:"Prettier parsing error"}]);}
+  finally{$("#formatButton").disabled=false;}
+}
+async function applyConfig(){
+  let next={};try{const raw=$("#customConfig").value.trim();if(raw){next=JSON.parse(raw);if(!next||typeof next!=="object"||Array.isArray(next))throw new Error("Configuration must be a JSON object.");}}
+  catch(e){showDiagnostics([{message:`Invalid custom config: ${e.message}`,line:1,column:1,offset:0,length:1,category:"Configuration error"}]);return;}
+  const urls=$("#pluginUrls").value.split("\n").map(s=>s.trim()).filter(Boolean),loaded=[];
+  for(const url of urls){try{const m=await import(/* @vite-ignore */ url);loaded.push(m.default??m);}catch(e){showDiagnostics([{message:`Could not load plugin:\n${url}\n${e.message||e}`,line:1,column:1,offset:0,length:1,category:"Plugin loading error"}]);return;}}
+  customConfig=next;customPlugins=loaded;clearErrors();setStatus(`Custom config applied; ${loaded.length} extra plugin(s) loaded.`,"success");
+}
+async function copyCode(){if(!editor.value)return setStatus("Nothing to copy.","warning");try{await navigator.clipboard.writeText(editor.value);setStatus("Copied to clipboard.","success");}catch{setStatus("Clipboard unavailable; select and copy manually.","error");}}
+function downloadCode(){if(!editor.value)return setStatus("Nothing to export.","warning");const ext=parserInfo[getParser()]?.ext||"txt",name=fileName==="untitled"?`untitled.${ext}`:fileName,url=URL.createObjectURL(new Blob([editor.value],{type:"text/plain;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setStatus(`Exported ${name}.`,"success");}
+editor.addEventListener("input",()=>{updateStats();saveHistory();setStatus("Editor modified.");if($("#checkOnEdit").checked){clearTimeout(checkTimer);checkTimer=setTimeout(checkErrors,500);}});
+editor.addEventListener("click",updateStats);editor.addEventListener("keyup",updateStats);editor.addEventListener("scroll",()=>{gutter.scrollTop=editor.scrollTop;});
+editor.addEventListener("keydown",e=>{
+  const mod=e.ctrlKey||e.metaKey;
+  if(mod&&e.key==="Enter"){e.preventDefault();formatCode();return;}
+  if(mod&&e.shiftKey&&e.key.toLowerCase()==="c"){e.preventDefault();copyCode();return;}
+  if(mod&&e.key.toLowerCase()==="z"){e.preventDefault();restoreHistory(e.shiftKey?historyIndex+1:historyIndex-1);return;}
+  if(e.key==="Tab"){e.preventDefault();const indent=$("#tabWidth").value==="tab"?"\t":" ".repeat(Number($("#tabWidth").value));editor.setRangeText(indent,editor.selectionStart,editor.selectionEnd,"end");updateStats();saveHistory();}
+});
+parserSelect.addEventListener("change",()=>{updateStats();if($("#checkOnEdit").checked)checkErrors();});
+$("#tabWidth").addEventListener("change",updateStats);
+$("#printWidth").addEventListener("change",()=>setStatus("Print width updated."));
+$("#semi").addEventListener("change",()=>setStatus("Semicolon preference updated."));
+$("#quotes").addEventListener("change",()=>setStatus("Quote preference updated."));
+$("#trailingComma").addEventListener("change",()=>setStatus("Trailing comma preference updated."));
+$("#formatButton").addEventListener("click",formatCode);$("#checkButton").addEventListener("click",checkErrors);$("#copyButton").addEventListener("click",copyCode);$("#downloadButton").addEventListener("click",downloadCode);
+$("#undoButton").addEventListener("click",()=>restoreHistory(historyIndex-1));$("#redoButton").addEventListener("click",()=>restoreHistory(historyIndex+1));$("#dismissErrors").addEventListener("click",clearErrors);
+$("#clearButton").addEventListener("click",()=>{editor.value="";fileName="untitled";saveHistory(true);clearErrors();updateStats();setStatus("Editor cleared.");editor.focus();});
+$("#configToggle").addEventListener("click",()=>$("#advanced").classList.toggle("hidden"));
+$("#applyConfig").addEventListener("click",applyConfig);
+$("#resetConfig").addEventListener("click",()=>{$("#customConfig").value="";$("#pluginUrls").value="";customConfig={};customPlugins=[];clearErrors();setStatus("Custom config and plugins reset.","success");});
+$("#uploadButton").addEventListener("click",()=>$("#fileInput").click());
+$("#fileInput").addEventListener("change",async e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  try{editor.value=await file.text();fileName=file.name;const ext=file.name.toLowerCase().split(".").pop(),map={ts:"typescript",tsx:"typescript",js:"babel",jsx:"babel",mjs:"babel",json:"json",html:"html",htm:"html",css:"css",scss:"scss",md:"markdown",yaml:"yaml",yml:"yaml"};parserSelect.value=map[ext]||"auto";saveHistory(true);updateStats();setStatus(`Opened ${file.name}.`,"success");checkErrors();}
+  catch(err){setStatus(`Could not open file: ${err.message}`,"error");}finally{e.target.value="";}
+});
+editor.addEventListener("paste",()=>{if($("#formatOnPaste").checked)setTimeout(formatCode,100);});
+updateHistoryButtons();updateStats();loadFormatter();
+</script>
+</body>
 </html>
